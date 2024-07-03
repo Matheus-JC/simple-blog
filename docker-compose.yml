@@ -1,0 +1,34 @@
+services:
+  application:
+    image: application_simpleblog:1.0
+    container_name: application_simpleblog
+    build:
+      context: ./
+      dockerfile: ./docker/application/Dockerfile
+    depends_on:
+      - sqldb
+
+  sqldb:
+    image: sqldb_simpleblog:1.0
+    container_name: sqldb_simpleblog
+    build:
+      context: ./
+      dockerfile: ./docker/sqlserver/Dockerfile
+    ports:
+      - 1433:1433
+    volumes:
+      - sqldb-data:/var/opt/mssql/data
+
+  reverse-proxy:
+    image: reverse_proxy_simpleblog:1.0
+    container_name: reverse_proxy_simpleblog
+    build:
+      context: ./
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 8080:80
+    depends_on:
+      - application
+
+volumes:
+  sqldb-data:
